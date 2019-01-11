@@ -34,6 +34,16 @@ mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 
 // Routes
 app.get("/", function (req, res) {
+  db.Article.find({saved: false})
+    .then(function (dbArticle) {
+      res.render("index", { results: dbArticle, isScrape: true });
+    })
+    .catch(function (err) {
+      res.json(err);
+    })
+});
+
+app.get("/articles", function (req, res) {
   db.Article.find({saved: true})
     .then(function (dbArticle) {
       res.render("index", { results: dbArticle });
@@ -90,18 +100,6 @@ app.get("/scrape", function (req, res) {
   })
 });
 
-// Route for getting all Articles from the db
-app.get("/articles", function (req, res) {
-  // TODO: Finish the route so it grabs all of the articles
-  db.Article.find({saved: false})
-    .then(function (dbArticle) {
-      res.render("index", { results: dbArticle, isScrape: true });
-      // res.json(dbArticle);
-    })
-    .catch(function (err) {
-      res.json(err);
-    })
-});
 
 // Route for grabbing a specific Article by id, populate it with it's note
 app.get("/articles/:id", function (req, res) {
