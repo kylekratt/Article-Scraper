@@ -92,6 +92,7 @@ function deleteNote(artId, noteId) {
 $(".scrape-new").on("click", function(){
   $.get("/scrape").then(function(data){
     console.log(data);
+    $("#scrapeModal").modal();
   })
 })
 $(".deleteIt").on("click", function(){
