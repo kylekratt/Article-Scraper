@@ -34,7 +34,7 @@ mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 
 // Routes
 app.get("/", function (req, res) {
-  db.savedArticles.find({})
+  db.Article.find({saved: true})
     .then(function (dbArticle) {
       res.render("index", { results: dbArticle });
     })
@@ -44,7 +44,7 @@ app.get("/", function (req, res) {
 })
 // A GET route for scraping the echoJS website
 app.get("/scrape", function (req, res) {
-  db.newArticles.deleteMany({}, function (err) {
+  db.Article.deleteMany({saved: false}, function (err) {
     console.log('c')
   });
   // First, we grab the body of the html with axios
@@ -71,17 +71,20 @@ app.get("/scrape", function (req, res) {
         result.summary += "...";
       }
 
-      // Create a new Article using the `result` object built from scraping
-      db.newArticles.create(result)
-        .then(function(dbArticle) {
-          // View the added result in the console
-          console.log(dbArticle);
-        })
-        .catch(function(err) {
-          // If an error occurred, log it
-          console.log(err);
-        })
-       
+      db.Article.count({saved: true, link: result.link }, function (err, count) {
+        if (count == 0) {
+
+          db.Article.create(result)
+            .then(function (dbArticle) {
+              // View the added result in the console
+              console.log(dbArticle);
+            })
+            .catch(function (err) {
+              // If an error occurred, log it
+              console.log(err);
+            })
+        }
+      })
     })
     res.send("scrape complete");
   })
@@ -90,9 +93,10 @@ app.get("/scrape", function (req, res) {
 // Route for getting all Articles from the db
 app.get("/articles", function (req, res) {
   // TODO: Finish the route so it grabs all of the articles
-  db.newArticles.find({})
+  db.Article.find({saved: false})
     .then(function (dbArticle) {
-      res.render("index", { results: dbArticle });
+      res.render("index", { results: dbArticle, isScrape: true });
+      // res.json(dbArticle);
     })
     .catch(function (err) {
       res.json(err);
@@ -101,12 +105,7 @@ app.get("/articles", function (req, res) {
 
 // Route for grabbing a specific Article by id, populate it with it's note
 app.get("/articles/:id", function (req, res) {
-  // TODO
-  // ====
-  // Finish the route so it finds one article using the req.params.id,
-  // and run the populate method with "note",
-  // then responds with the article with the note included
-  db.savedArticles.findOne({ _id: req.params.id })
+  db.Article.findOne({saved: true, _id: req.params.id })
     .populate("note")
     .then(function (dbArticle) {
       res.json(dbArticle);
@@ -115,7 +114,13 @@ app.get("/articles/:id", function (req, res) {
       res.json(err);
     })
 });
-
+app.post("/saveArticle/:id", function (req, res) {
+  db.Article.findOneAndUpdate({_id: req.params.id }, { $set: {saved: true}}, function(err, result) {
+    if (err) console.log(err)
+    console.log(result);
+    res.json(result);
+  })
+})
 // Route for saving/updating an Article's associated Note
 app.post("/articles/:id", function (req, res) {
   // TODO
@@ -125,7 +130,7 @@ app.post("/articles/:id", function (req, res) {
   // and update it's "note" property with the _id of the new note
   db.Note.create(req.body)
     .then(function (dbNote) {
-      return db.savedArticles.findOneAndUpdate({ _id: req.params.id }, { $push: { note: dbNote._id } }, { new: true });
+      return db.Article.findOneAndUpdate({saved: true, _id: req.params.id }, { $push: { note: dbNote._id } }, { new: true });
     })
     .then(function (dbArticle) {
       res.json(dbArticle);
@@ -142,7 +147,7 @@ app.delete("/articles/:id", function (req, res) {
   // and update it's "note" property with the _id of the new note
   db.Note.deleteOne(req.body)
     .then(function (dbNote) {
-      return db.savedArticles.deleteOne({ _id: req.params.id }, { $pull: { note: dbNote._id } }, { new: true });
+      return db.Article.deleteOne({ saved: true, _id: req.params.id }, { $pull: { note: dbNote._id } }, { new: true });
     })
     .then(function (dbArticle) {
       res.json(dbArticle);
@@ -152,7 +157,7 @@ app.delete("/articles/:id", function (req, res) {
     });
 });
 app.delete("/savedArticles/:id", function (req, res) {
-  db.savedArticles.findByIdAndDelete(req.params.id)
+  db.Article.findOneAndDelete({saved: true, _id: req.params.id})
     .then(function (dbArticle) {
       res.json(dbArticle);
     })

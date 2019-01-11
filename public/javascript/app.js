@@ -28,7 +28,18 @@ $("#saveNote").attr("data-id", thisId);
 $("#noteModal").modal();
     });
 });
-
+$(".saveIt").on("click", function() {
+  console.log("You clicked me!");
+  var thisId = $(this).attr("data-id");
+  $.ajax({
+    method: "POST",
+    url: "/saveArticle/" + thisId
+  })
+  .then(function (data) {
+    console.log(data);
+    window.location.replace("/articles");
+  })
+})
 // When you click the savenote button
 $("#saveNote").on("click", function () {
   // Grab the id associated with the article from the submit button
@@ -81,9 +92,7 @@ function deleteNote(artId, noteId) {
 $(".scrape-new").on("click", function(){
   $.get("/scrape").then(function(data){
     console.log(data);
-    $.get("/articles").then(function(data){
-      console.log(data);
-    })
+   window.location.replace("/articles");
   })
 })
 $(".deleteIt").on("click", function(){

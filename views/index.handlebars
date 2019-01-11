@@ -1,6 +1,6 @@
 <body class="bg-secondary">
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="/">Tech-Crunch Scraper</a>
+    <a class="navbar-brand" href="/articles">Tech-Crunch Scraper</a>
     <button class="navbar-toggler" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01"
       aria-expanded="true" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -25,12 +25,21 @@
             <h3 style="max-width:75%; float: left">
               <a class="text-light" href="{{link}}">{{title}}</a>
             </h3>
+            {{#unless ../isScrape}}
             <a class="btn float-right mx-2 my-1 btn-danger deleteIt" data-id="{{_id}}">
               Delete Article
             </a>
+            {{/unless}}
+            {{#if ../isScrape}}
+            <a class="btn float-right mx-2 my-1 btn-danger saveIt" data-id="{{_id}}">
+              Save Article
+            </a>
+            {{/if}}
+            {{#unless ../isScrape}}
             <a class="btn float-right mx-2 my-1 btn-primary noteIt" data-id="{{_id}}">
               View Notes
             </a>
+            {{/unless}}
           </div>
           <div class="card-body">
             {{summary}}
