@@ -1,0 +1,71 @@
+<body class="bg-secondary">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="/">Tech-Crunch Scraper</a>
+    <button class="navbar-toggler" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01"
+      aria-expanded="true" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="navbar-collapse collapse in">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="btn btn-light scrape-new mx-3">SCRAPE NEW ARTICLES</a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-light mx-3" href="/">SAVED ARTICLES</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <div class="container">
+    <div id="articles">
+      {{#each results}}
+      <div class="row" id="{{_id}}">
+        <div class="card my-2 col-lg-12 px-0 mr-1 border-0">
+          <div class="card-header bg-dark text-center text-light">
+            <h3 style="max-width:75%; float: left">
+              <a class="text-light" href="{{link}}">{{title}}</a>
+            </h3>
+            <a class="btn float-right mx-2 my-1 btn-danger deleteIt" data-id="{{_id}}">
+              Delete Article
+            </a>
+            <a class="btn float-right mx-2 my-1 btn-primary noteIt" data-id="{{_id}}">
+              View Notes
+            </a>
+          </div>
+          <div class="card-body">
+            {{summary}}
+          </div>
+        </div>
+      </div>
+      {{/each}}
+    </div>
+    <div id="notes">
+      <div class="modal fade" id="noteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content text-center">
+            <div class="modal-header">
+              <h5 class="modal-title" id="note">Notes</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <ul class="modal-body list-group" id="noteBody">
+            </ul>
+            <textarea id="newNote" rows="4" cols="60" class="modal-body mx-2">
+            </textarea>            
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" id="saveNote">Save Note</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+    crossorigin="anonymous"></script>
+  <script src="/javascript/app.js"></script>
+</body>
